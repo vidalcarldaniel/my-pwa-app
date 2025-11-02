@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import MovieList from "./components/MovieList";
@@ -44,9 +45,37 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col bg-neutral-900 relative overflow-hidden">
+        {/* Toast Notifications */}
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "linear-gradient(90deg, #1a1a1a, #2d0f0f)",
+              color: "#fff",
+              border: "1px solid #ff3b00",
+              boxShadow: "0 0 15px rgba(255, 60, 0, 0.4)",
+            },
+            success: {
+              icon: "🩸",
+              style: {
+                border: "1px solid #ff4d00",
+                boxShadow: "0 0 20px rgba(255, 80, 0, 0.5)",
+              },
+            },
+            error: {
+              icon: "💀",
+              style: {
+                border: "1px solid #a10000",
+                boxShadow: "0 0 20px rgba(255, 0, 0, 0.5)",
+              },
+            },
+          }}
+        />
+
         <Header />
         <Routes>
-
           <Route
             path="/"
             element={

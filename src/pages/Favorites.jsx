@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
@@ -15,6 +16,15 @@ function Favorites() {
     const updated = favorites.filter((movie) => movie.imdbID !== imdbID);
     setFavorites(updated);
     localStorage.setItem("favorites", JSON.stringify(updated));
+
+    toast.error("Removed from Favorites 💔", {
+      style: {
+        background: "#1f1f1f",
+        color: "#fff",
+        border: "1px solid #fb923c",
+      },
+      icon: "💔",
+    });
   };
 
   return (
@@ -41,17 +51,14 @@ function Favorites() {
           <div className="text-center py-8 sm:py-12 md:py-16 px-4">
             <div className="inline-block px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-neutral-800/60 backdrop-blur-sm rounded-full border border-orange-400/30 shadow-sm">
               <p className="text-sm sm:text-base text-gray-300 font-medium">
-                ✧ No favorites yet. Start adding some movies! ✧
+                No favorites yet. Start adding some movies!
               </p>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {favorites.map((movie) => (
-              <div
-                key={movie.imdbID}
-                className="group relative cursor-pointer"
-              >
+              <div key={movie.imdbID} className="group relative cursor-pointer">
                 {/* Unfavorite Button */}
                 <button
                   onClick={(e) => {
@@ -93,7 +100,10 @@ function Favorites() {
                         {movie.Title}
                       </h2>
                       <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-400">
-                        <Calendar size={12} className="text-orange-400 sm:w-3.5 sm:h-3.5" />
+                        <Calendar
+                          size={12}
+                          className="text-orange-400 sm:w-3.5 sm:h-3.5"
+                        />
                         <span>{movie.Year}</span>
                       </div>
                     </div>

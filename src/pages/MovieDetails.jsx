@@ -14,6 +14,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import toast from "react-hot-toast";
 
 const API_KEY = "3ae4907c";
 
@@ -73,13 +74,17 @@ function MovieDetails() {
       const updated = stored.filter((m) => m.imdbID !== movie.imdbID);
       localStorage.setItem("favorites", JSON.stringify(updated));
       setIsFavorite(false);
-      alert("Removed from Favorites 💔");
+      toast.error("Removed from Favorites 💔", {
+        style: { background: "#1f1f1f", color: "#fff" },
+      });
     } else {
       // Add to favorites
       stored.push(movie);
       localStorage.setItem("favorites", JSON.stringify(stored));
       setIsFavorite(true);
-      alert("Added to Favorites ❤️");
+      toast.success("Added to Favorites ❤️", {
+        style: { background: "#1f1f1f", color: "#fff" },
+      });
     }
   };
 
