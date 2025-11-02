@@ -1,0 +1,71 @@
+import { useState } from "react";
+import { Menu, X, Ghost } from "lucide-react";
+import { Link } from "react-router-dom";
+
+function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <header className="w-full bg-neutral-800/70 backdrop-blur-lg shadow-md border-b border-orange-400/30 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
+        {/* Logo + Title */}
+        <Link to="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2 animate-pulse">
+          <Ghost className="text-orange-400 w-7 h-7" />
+         <h1 className="text-xl md:text-2xl font-bold text-gray-100">
+            Watch<span className="text-orange-400">Out</span>
+         </h1>
+        </div>
+        </Link>
+
+        {/* Desktop Menu */}
+        <nav className="hidden md:flex gap-6 text-gray-300 font-medium">
+         <Link
+            to="/"
+            className="hover:text-orange-400 transition-colors duration-200 animate-pulse"
+          >
+            Home
+          </Link>
+          <Link
+            to="/favorites"
+            className="hover:text-orange-400 transition-colors duration-200 animate-pulse"
+          >
+            Favorites
+          </Link>
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-gray-300"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-neutral-800 border-t border-orange-400/30 shadow-lg">
+          <nav className="flex flex-col items-center py-3 space-y-3 text-gray-300 font-medium">
+           <Link
+              to="/"
+              onClick={() => setIsOpen(false)}
+              className="hover:text-orange-400 transition-colors animate-pulse"
+            >
+              Home
+            </Link>
+            <Link
+              to="/favorites"
+              onClick={() => setIsOpen(false)}
+              className="hover:text-orange-400 transition-colors animate-pulse"
+            >
+              Favorites
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
+
+export default Header;
