@@ -24,6 +24,10 @@ function MovieDetails() {
   const [movie, setMovie] = useState(null);
   const [related, setRelated] = useState([]);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   // Fetch Movie Details
   useEffect(() => {
@@ -35,6 +39,12 @@ function MovieDetails() {
       setMovie(data);
     };
     fetchMovie();
+  }, [id]);
+
+  // Load reviews from localStorage
+  useEffect(() => {
+    const storedReviews = JSON.parse(localStorage.getItem("movieReviews")) || {};
+    setReviews(storedReviews[id] || []);
   }, [id]);
 
   // Check if movie is in favorites
@@ -70,7 +80,6 @@ function MovieDetails() {
     const stored = JSON.parse(localStorage.getItem("favorites")) || [];
 
     if (isFavorite) {
-      // Remove from favorites
       const updated = stored.filter((m) => m.imdbID !== movie.imdbID);
       localStorage.setItem("favorites", JSON.stringify(updated));
       setIsFavorite(false);
@@ -78,7 +87,6 @@ function MovieDetails() {
         style: { background: "#1f1f1f", color: "#fff" },
       });
     } else {
-      // Add to favorites
       stored.push(movie);
       localStorage.setItem("favorites", JSON.stringify(stored));
       setIsFavorite(true);
@@ -86,6 +94,39 @@ function MovieDetails() {
         style: { background: "#1f1f1f", color: "#fff" },
       });
     }
+  };
+
+  // Submit review
+  const handleReviewSubmit = () => {
+    if (rating === 0) {
+      toast.error("Please select a rating first ⭐");
+      return;
+    }
+    if (review.trim() === "") {
+      toast.error("Please write a short review 💬");
+      return;
+    }
+
+    const newReview = {
+      id: Date.now(),
+      rating,
+      text: review,
+      date: new Date().toLocaleString(),
+    };
+
+    const storedReviews = JSON.parse(localStorage.getItem("movieReviews")) || {};
+    const updated = {
+      ...storedReviews,
+      [id]: [...(storedReviews[id] || []), newReview],
+    };
+
+    localStorage.setItem("movieReviews", JSON.stringify(updated));
+    setReviews(updated[id]);
+    setRating(0);
+    setReview("");
+    toast.success("Review submitted successfully! 🎉", {
+      style: { background: "#1f1f1f", color: "#fff" },
+    });
   };
 
   if (!movie) {
@@ -259,6 +300,74 @@ function MovieDetails() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ✧ User Review Section ✧ */}
+        <div className="mt-12 bg-neutral-800/70 border border-orange-400/30 rounded-2xl p-8 shadow-xl">
+          <h3 className="text-xl font-semibold text-orange-400 mb-4">
+            Leave a Review ✧
+          </h3>
+
+          {/* Rating Stars */}
+          <div className="flex items-center gap-2 mb-4">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <Star
+                key={num}
+                size={28}
+                onMouseEnter={() => setHoverRating(num)}
+                onMouseLeave={() => setHoverRating(0)}
+                onClick={() => setRating(num)}
+                className={`cursor-pointer transition-colors ${
+                  num <= (hoverRating || rating)
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-500"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Review Input */}
+          <textarea
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+            placeholder="Write your thoughts about this movie..."
+            className="w-full p-4 bg-neutral-900 text-gray-200 rounded-xl border border-orange-400/20 focus:outline-none focus:border-orange-400/50 resize-none mb-4"
+            rows="4"
+          />
+
+          <button
+            onClick={handleReviewSubmit}
+            className="w-full px-6 py-3 bg-orange-400 text-neutral-900 rounded-xl font-semibold hover:bg-orange-500 active:scale-95 transition-all"
+          >
+            Submit Review
+          </button>
+
+          {/* Display Submitted Reviews */}
+          {reviews.length > 0 && (
+            <div className="mt-8 space-y-4">
+              <h4 className="text-lg font-semibold text-orange-400">
+                User Reviews
+              </h4>
+              {reviews.map((r) => (
+                <div
+                  key={r.id}
+                  className="bg-neutral-900/80 p-4 rounded-xl border border-orange-400/20"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    {[...Array(r.rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        className="text-yellow-400 fill-yellow-400"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-200">{r.text}</p>
+                  <p className="text-xs text-gray-500 mt-2">{r.date}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Related Movies Section */}
